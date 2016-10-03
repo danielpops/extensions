@@ -3,7 +3,7 @@
  *
 */
 function copyTextToClipboard(text) {
-      var copyFrom = document.createElement("copy_text_to_clipboard_textarea");
+      var copyFrom = document.createElement("textarea");
       copyFrom.textContent = text;
       var body = document.getElementsByTagName('body')[0];
       body.appendChild(copyFrom);
