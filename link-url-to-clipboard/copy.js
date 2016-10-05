@@ -17,47 +17,53 @@ document.addEventListener('keydown', doKeyPress); //add the keyboard handler
 
 function doKeyPress(e){
 
+    enabled = localStorage.getItem("enabled") == "true";
 
-	if(localStorage.getItem("shoudCopyURLS") == null){
-		localStorage.setItem("shoudCopyURLS", false);
-		console.log("initializing localStorage");
-	}
+    // Toggle the feature on/off
+    if (e.metaKey == true && e.keyCode == 190){
+        if(enabled){
+            chrome.runtime.sendMessage({icon: "plain.png"}, function(response) {
+                console.log("toggled extension off");
+            });
+        }
+        else {
+            chrome.runtime.sendMessage({icon: "writeit.png"}, function(response) {
+                console.log("toggled extension on");
+            });
+        }
+        localStorage.setItem("enabled", !enabled);
+        return;
+    }
 
-	if (e.metaKey == true && e.keyCode == 190){ 
-		chrome.runtime.sendMessage({changeIcon:!localStorage["shoudCopyURLS"]}, function(response) {
-		  console.log("sending message to background and toggling extension.");
-		});
-	}
+    if(enabled){
+        if (e.metaKey == true && e.keyCode == 67){
+            console.log("Hijacked cmd + c event");
+            // Find the nearest a href link tag in the node hierarchy
+            selection = document.getSelection();
+            if(selection.toString() == "") {
+                return false;
+            }
+            node = selection.focusNode;
+            console.log("Initial node name: " + node.nodeName);
+            while(node.parentElement != null) {
+                node = node.parentElement;
+                console.log("Node name: " + node.nodeName);
+                if(node.nodeName == "A") {
+                    break;
+                }
+            }
+            url = node.href;
+            if(url == null) {
+                console.log("Couldn't find a link. Just do whatever it would have done anyway");
+                return false;
+            }
+            console.log("Copying the url to clipboard: " + url);
+            copyTextToClipboard(url);
+            return true;
+        }
 
-	if(localStorage["shoudCopyURLS"] == true){
-	    if (e.metaKey == true && e.keyCode == 67){ // if e.shiftKey is not provided then script will run at all instances of typing "G"
-	        console.log("Hijacked cmd + c event");
-	        // Find the nearest a href link tag in the node hierarchy
-	        selection = document.getSelection();
-	        if(selection.toString() == "") {
-	            return false;
-	        }
-	        node = selection.focusNode;
-	        console.log("Initial node name: " + node.nodeName);
-	        while(node.parentElement != null) {
-	            node = node.parentElement;
-	            console.log("Node name: " + node.nodeName);
-	            if(node.nodeName == "A") {
-	                break;
-	            }
-	        }
-	        url = node.href;
-	        if(url == null) {
-	            console.log("Couldn't find a link. Just do whatever it would have done anyway");
-	            return false;
-	        }
-	        console.log("Copying the url to clipboard: " + url);
-	        copyTextToClipboard(url);
-	        return true;
-	    }
-
-	    return false;		
-	}
+        return false;
+    }
 
 }
 
