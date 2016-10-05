@@ -4,7 +4,7 @@
   "name": "Copy link url to clipboard",
   "description": "This extension will copy the url of a highlighted element to the system clipboard",
   "version": "1.0",
-
+  
   "browser_action": {
     "default_icon": "plain.png",
     "default_popup": "popup.html"
