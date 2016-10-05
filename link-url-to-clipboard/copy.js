@@ -14,6 +14,13 @@ function copyTextToClipboard(text) {
 document.addEventListener('keydown', doKeyPress); //add the keyboard handler
 
 function doKeyPress(e){
+
+	if (e.metaKey == true && e.keyCode == 190){ 
+		chrome.runtime.sendMessage({changeIcon:true}, function(response) {
+		  console.log("sending message to background.");
+		});
+	}
+
     if (e.metaKey == true && e.keyCode == 67){ // if e.shiftKey is not provided then script will run at all instances of typing "G"
         console.log("Hijacked cmd + c event");
         // Find the nearest a href link tag in the node hierarchy
